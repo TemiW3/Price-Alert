@@ -184,7 +184,7 @@ contract PriceAlert {
             uint256 latestTimestamp
         )
     {
-        totalDataPoints = tellor.getNewValueCountbyQueryId(ethQueryId);
+        totalDataPoints = tellor.getNewValueCountbyQueryId(queryId);
 
         if (totalDataPoints > 0) {
             (latestPrice, latestTimestamp) = getCurrentPrice();
