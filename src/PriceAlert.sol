@@ -103,4 +103,33 @@ contract PriceAlert {
 
         price = abi.decode(data, (uint256));
     }
+
+    function checkAlert(uint256 _alertId) external returns (bool) {
+        require(_alertId < alerts.length, "Alert does not exist");
+        Alert storage alert = alerts[_alertId];
+
+        require(!alert.triggered, "Alert already triggered");
+
+        // Get current price from Tellor
+        (uint256 currentPrice, uint256 timestamp) = getCurrentPrice();
+
+        require(timestamp > 0, "No price data available");
+        require(block.timestamp - timestamp < 24 hours, "Price data too old");
+
+        // Check if alert condition is met
+        bool shouldTrigger = false;
+
+        if (alert.isAbove && currentPrice >= alert.targetPrice) {
+            shouldTrigger = true;
+        } else if (!alert.isAbove && currentPrice <= alert.targetPrice) {
+            shouldTrigger = true;
+        }
+
+        if (shouldTrigger) {
+            alert.triggered = true;
+            emit AlertTriggered(_alertId, alert.user, currentPrice);
+        }
+
+        return shouldTrigger;
+    }
 }
