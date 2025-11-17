@@ -174,4 +174,47 @@ contract PriceAlert {
     function getTotalAlerts() external view returns (uint256) {
         return alerts.length;
     }
+
+    function getDataFeedInfo()
+        external
+        view
+        returns (
+            uint256 totalDataPoints,
+            uint256 latestPrice,
+            uint256 latestTimestamp
+        )
+    {
+        totalDataPoints = tellor.getNewValueCountbyQueryId(ethQueryId);
+
+        if (totalDataPoints > 0) {
+            (latestPrice, latestTimestamp) = getCurrentPrice();
+        }
+    }
+
+    function getActiveAlerts(
+        address _user
+    ) external view returns (uint256[] memory) {
+        uint256[] memory allAlerts = userAlerts[_user];
+        uint256 activeCount = 0;
+
+        // Count active alerts
+        for (uint256 i = 0; i < allAlerts.length; i++) {
+            if (!alerts[allAlerts[i]].triggered) {
+                activeCount++;
+            }
+        }
+
+        // Create array of active alert IDs
+        uint256[] memory activeAlerts = new uint256[](activeCount);
+        uint256 currentIndex = 0;
+
+        for (uint256 i = 0; i < allAlerts.length; i++) {
+            if (!alerts[allAlerts[i]].triggered) {
+                activeAlerts[currentIndex] = allAlerts[i];
+                currentIndex++;
+            }
+        }
+
+        return activeAlerts;
+    }
 }
