@@ -157,4 +157,21 @@ contract PriceAlert {
 
         emit AlertDeleted(_alertId, msg.sender);
     }
+
+    function getUserAlerts(
+        address _user
+    ) external view returns (uint256[] memory) {
+        return userAlerts[_user];
+    }
+
+    function getAlert(
+        uint256 _alertId
+    ) external view returns (Alert memory alert) {
+        require(_alertId < alerts.length, "Alert does not exist");
+        alert = alerts[_alertId];
+    }
+
+    function getTotalAlerts() external view returns (uint256) {
+        return alerts.length;
+    }
 }
