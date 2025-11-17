@@ -83,4 +83,24 @@ contract PriceAlert {
 
         return alertId;
     }
+
+    function getCurrentPrice()
+        public
+        view
+        returns (uint256 price, uint256 timestamp)
+    {
+        // First, check if there's any data
+        uint256 count = tellor.getNewValueCountbyQueryId(queryId);
+        require(count > 0, "No data available");
+
+        // Get the latest timestamp
+        uint256 latestIndex = count - 1;
+        timestamp = tellor.getTimestampbyQueryIdandIndex(queryId, latestIndex);
+
+        // Retrieve the data
+        bytes memory data = tellor.retrieveData(queryId, timestamp);
+        require(data.length >= 32, "Invalid data");
+
+        price = abi.decode(data, (uint256));
+    }
 }
