@@ -132,4 +132,19 @@ contract PriceAlert {
 
         return shouldTrigger;
     }
+
+    function getPriceAt(
+        uint256 _timestamp
+    ) public view returns (uint256 price, uint256 timestamp) {
+        (bytes memory data, uint256 retrievedTimestamp) = tellor.getDataBefore(
+            queryId,
+            _timestamp
+        );
+
+        require(retrievedTimestamp > 0, "No data available");
+        require(data.length >= 32, "Invalid data");
+
+        price = abi.decode(data, (uint256));
+        timestamp = retrievedTimestamp;
+    }
 }
