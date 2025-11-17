@@ -26,7 +26,7 @@ interface ITellor {
 }
 
 contract TestPrice is Script {
-    bytes32 public btcQueryId;
+    bytes32 public ethQueryId;
 
     // Helper function to convert timestamp to readable format
     function timestampToDateTime(
@@ -118,7 +118,7 @@ contract TestPrice is Script {
             "SpotPrice",
             abi.encode("eth", "usd")
         );
-        btcQueryId = keccak256(_queryData);
+        ethQueryId = keccak256(_queryData);
     }
 
     function run() external view {
@@ -127,13 +127,13 @@ contract TestPrice is Script {
 
         console.log("=== Testing Tellor Oracle ===");
         console.log("Oracle Address:", tellorOracle);
-        console.log("BTC Query ID:", vm.toString(abi.encodePacked(btcQueryId)));
+        console.log("ETH Query ID:", vm.toString(abi.encodePacked(ethQueryId)));
 
         ITellor tellor = ITellor(tellorOracle);
 
         // First get the count of data points to find the latest index
         console.log("\nGetting data count for query...");
-        try tellor.getNewValueCountbyQueryId(btcQueryId) returns (
+        try tellor.getNewValueCountbyQueryId(ethQueryId) returns (
             uint256 count
         ) {
             console.log("Total data points:", count);
@@ -148,12 +148,12 @@ contract TestPrice is Script {
             console.log("Getting latest timestamp at index:", latestIndex);
 
             try
-                tellor.getTimestampbyQueryIdandIndex(btcQueryId, latestIndex)
+                tellor.getTimestampbyQueryIdandIndex(ethQueryId, latestIndex)
             returns (uint256 timestamp) {
                 console.log("Latest timestamp:", timestamp);
 
                 // Try to retrieve the data using the found timestamp
-                try tellor.retrieveData(btcQueryId, timestamp) returns (
+                try tellor.retrieveData(ethQueryId, timestamp) returns (
                     bytes memory data
                 ) {
                     console.log("Retrieved data length:", data.length);
@@ -162,8 +162,8 @@ contract TestPrice is Script {
                     if (data.length >= 32) {
                         uint256 _value = abi.decode(data, (uint256));
                         console.log("\nSUCCESS!");
-                        console.log("BTC/USD Price raw value:", _value);
-                        console.log("BTC/USD Price: $", _value / 1e18);
+                        console.log("ETH/USD Price raw value:", _value);
+                        console.log("ETH/USD Price: $", _value / 1e18);
 
                         // Display timestamp info
                         console.log("Data timestamp:", timestamp);
@@ -206,7 +206,7 @@ contract TestPrice is Script {
         } catch Error(string memory reason) {
             console.log("Failed to get data count:", reason);
             console.log(
-                "This might mean no data has been submitted for BTC/USD yet"
+                "This might mean no data has been submitted for ETH/USD yet"
             );
         }
     }
