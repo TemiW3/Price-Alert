@@ -1,0 +1,86 @@
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.20;
+
+interface ITellor {
+    function getDataBefore(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) external view returns (bytes memory _value, uint256 _timestampRetrieved);
+
+    function retrieveData(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) external view returns (bytes memory);
+
+    function getNewValueCountbyQueryId(
+        bytes32 _queryId
+    ) external view returns (uint256);
+
+    function getTimestampbyQueryIdandIndex(
+        bytes32 _queryId,
+        uint256 _index
+    ) external view returns (uint256);
+}
+
+contract PriceAlert {
+    struct Alert {
+        uint256 id;
+        address user;
+        uint256 targetPrice;
+        bool isAbove;
+        bool triggered;
+        uint256 createdAt;
+    }
+
+    ITellor public immutable tellor;
+    bytes32 public immutable queryId;
+
+    Alert[] public alerts;
+    mapping(address => uint256[]) public userAlerts;
+
+    event AlertCreated(
+        uint256 indexed alertId,
+        address indexed user,
+        uint256 targetPrice,
+        bool isAbove
+    );
+
+    event AlertTriggered(
+        uint256 indexed alertId,
+        address indexed user,
+        uint256 currentPrice
+    );
+
+    event AlertDeleted(uint256 indexed alertId, address indexed user);
+
+    constructor(address _tellorAddress, bytes32 _queryId) {
+        tellor = ITellor(_tellorAddress);
+        queryId = _queryId;
+    }
+
+    function createAlert(
+        uint256 _targetPrice,
+        bool _isAbove
+    ) external returns (uint256) {
+        require(_targetPrice > 0, "Price must be > 0");
+
+        uint256 alertId = alerts.length;
+
+        Alert memory newAlert = Alert({
+            id: alertId,
+            user: msg.sender,
+            targetPrice: _targetPrice,
+            isAbove: _isAbove,
+            triggered: false,
+            createdAt: block.timestamp
+        });
+
+        alerts.push(newAlert);
+        userAlerts[msg.sender].push(alertId);
+
+        emit AlertCreated(alertId, msg.sender, _targetPrice, _isAbove);
+
+        return alertId;
+    }
+}
