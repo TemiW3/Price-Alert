@@ -147,4 +147,14 @@ contract PriceAlert {
         price = abi.decode(data, (uint256));
         timestamp = retrievedTimestamp;
     }
+
+    function deleteAlert(uint256 _alertId) external {
+        require(_alertId < alerts.length, "Alert does not exist");
+        require(alerts[_alertId].user == msg.sender, "Not your alert");
+        require(!alerts[_alertId].triggered, "Alert already triggered");
+
+        alerts[_alertId].triggered = true;
+
+        emit AlertDeleted(_alertId, msg.sender);
+    }
 }
