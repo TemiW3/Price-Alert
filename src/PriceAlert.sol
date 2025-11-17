@@ -2,26 +2,7 @@
 
 pragma solidity ^0.8.20;
 
-interface ITellor {
-    function getDataBefore(
-        bytes32 _queryId,
-        uint256 _timestamp
-    ) external view returns (bytes memory _value, uint256 _timestampRetrieved);
-
-    function retrieveData(
-        bytes32 _queryId,
-        uint256 _timestamp
-    ) external view returns (bytes memory);
-
-    function getNewValueCountbyQueryId(
-        bytes32 _queryId
-    ) external view returns (uint256);
-
-    function getTimestampbyQueryIdandIndex(
-        bytes32 _queryId,
-        uint256 _index
-    ) external view returns (uint256);
-}
+import {ITellor} from "../lib/usingtellor/contracts/interface/ITellor.sol";
 
 contract PriceAlert {
     struct Alert {
@@ -136,11 +117,13 @@ contract PriceAlert {
     function getPriceAt(
         uint256 _timestamp
     ) public view returns (uint256 price, uint256 timestamp) {
-        (bytes memory data, uint256 retrievedTimestamp) = tellor.getDataBefore(
-            queryId,
-            _timestamp
-        );
+        (
+            bool _ifRetrieve,
+            bytes memory data,
+            uint256 retrievedTimestamp
+        ) = tellor.getDataBefore(queryId, _timestamp);
 
+        require(_ifRetrieve, "No Datafound for timestamp");
         require(retrievedTimestamp > 0, "No data available");
         require(data.length >= 32, "Invalid data");
 
