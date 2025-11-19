@@ -124,6 +124,7 @@ contract TestPrice is Script {
     function run() external view {
         // Tellor Playground address for Sepolia testnet
         address tellorOracle = 0xB19584Be015c04cf6CFBF6370Fe94a58b7A38830;
+        // address tellorOracle = 0xB19584bE015C04Cf6cfBf0FC3c6EAc2400B94e84;
 
         console.log("=== Testing Tellor Oracle ===");
         console.log("Oracle Address:", tellorOracle);
