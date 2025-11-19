@@ -123,7 +123,7 @@ contract PriceAlert {
             uint256 retrievedTimestamp
         ) = tellor.getDataBefore(queryId, _timestamp);
 
-        require(_ifRetrieve, "No Datafound for timestamp");
+        require(_ifRetrieve, "No data before timestamp");
         require(retrievedTimestamp > 0, "No data available");
         require(data.length >= 32, "Invalid data");
 
