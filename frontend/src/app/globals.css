@@ -24,3 +24,93 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Price Card Styles */
+.priceCard {
+  background: linear-gradient(to bottom right, #6366f1, #9333ea);
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  color: white;
+}
+
+.priceCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.priceCardLabel {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+  margin-bottom: 0.5rem;
+}
+
+.priceCardValue {
+  font-size: 3rem;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.priceCardEmoji {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  opacity: 0.75;
+  animation: pulse 2s infinite;
+}
+
+.priceCardRefreshBtn {
+  padding: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  transition: all 0.2s ease-in-out;
+  border: none;
+  cursor: pointer;
+}
+
+.priceCardRefreshBtn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.priceCardRefreshBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.priceCardInfo {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  opacity: 0.9;
+}
+
+.priceCardInfo > * + * {
+  margin-top: 0.25rem;
+}
+
+.priceCardFooter {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.priceCardFooterText {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  opacity: 0.75;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
