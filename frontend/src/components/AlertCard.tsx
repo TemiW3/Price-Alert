@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../app/global.css";
+import "../app/globals.css";
 
 interface Alert {
   id: string;
@@ -24,6 +24,19 @@ export default function AlertCard({
   onCheck,
   loading,
 }: AlertCardProps): React.ReactElement {
+  // Guard against undefined alert
+  if (!alert) {
+    return (
+      <div className="alertCard alertCardActive">
+        <div className="alertCardContent">
+          <div className="alertCardInfo">
+            <p className="alertCardPrice">Loading alert...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const formatTimestamp = (timestamp: number) => {
     if (!timestamp) return "N/A";
     const date = new Date(timestamp * 1000);

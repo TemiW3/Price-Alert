@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../app/global.css";
+import "../app/globals.css";
 
 interface AlertFormProps {
   onCreateAlert: (price: number, isAbove: boolean) => void;
