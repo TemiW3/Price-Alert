@@ -36,11 +36,12 @@ const nextConfig: NextConfig = {
 
     // Ignore problematic files and directories
     config.plugins = config.plugins || [];
-    const { IgnorePlugin } = require('webpack');
-    
+    const { IgnorePlugin } = require("webpack");
+
     config.plugins.push(
       new IgnorePlugin({
-        resourceRegExp: /^(tap|tape|fastbench|desm|why-is-node-running|pino-elasticsearch)$/,
+        resourceRegExp:
+          /^(tap|tape|fastbench|desm|why-is-node-running|pino-elasticsearch)$/,
       }),
       new IgnorePlugin({
         resourceRegExp: /node_modules\/thread-stream\/(test|bench)/,
