@@ -34,39 +34,53 @@ export default function PriceCard({
   return (
     <div className="priceCard">
       <div className="priceCardHeader">
-        <h3 className="priceCardLabel">ETH/USD Price</h3>
         <div>
+          <h3 className="priceCardLabel">
+            ETH/USD Price{" "}
+            {loading && <span className="loadingDot">Refreshing...</span>}
+          </h3>
           <span className="priceCardValue">
             $
-            {ethPrice
-              ? parseFloat(ethPrice).toLocaleString("en-UK", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })
-              : "Loading..."}
+            {loading ? (
+              <span className="loadingText">Refreshing...</span>
+            ) : ethPrice ? (
+              parseFloat(ethPrice).toLocaleString("en-UK", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })
+            ) : (
+              "Loading..."
+            )}
           </span>
         </div>
-      </div>
-      <button
-        className="priceCardRefreshBtn"
-        onClick={onRefresh}
-        disabled={loading}
-        title="Refresh Price"
-      >
-        <svg
-          className={loading ? "iconSpin" : "iconSmall"}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+        <button
+          className="priceCardRefreshBtn"
+          onClick={onRefresh}
+          disabled={loading}
+          title={loading ? "Refreshing..." : "Refresh Price"}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-          />
-        </svg>
-      </button>
+          <svg
+            className={loading ? "iconSpin" : "iconSmall"}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div className="priceCardFooter">
+        <div className="priceCardInfo">
+          <p>Last updated: {formatTimestamp(timestamp)}</p>
+          <p>Time ago: {getTimeAgo(timestamp)}</p>
+        </div>
+      </div>
     </div>
   );
 }

@@ -12,6 +12,7 @@ import "../app/globals.css";
 export default function Home() {
   const { isConnected } = useAccount();
   const [refreshCounter, setRefreshCounter] = useState(0);
+  const [isRefreshingPrice, setIsRefreshingPrice] = useState(false);
 
   // Contract hooks
   const {
@@ -46,9 +47,17 @@ export default function Home() {
     : 0;
 
   // Handle refresh price
-  const handleRefreshPrice = useCallback(() => {
-    refetchPrice();
-    setRefreshCounter((prev) => prev + 1);
+  const handleRefreshPrice = useCallback(async () => {
+    try {
+      setIsRefreshingPrice(true);
+      await refetchPrice();
+      setRefreshCounter((prev) => prev + 1);
+    } catch (error) {
+      console.error("Failed to refresh price:", error);
+      // You could add a toast notification here if you have one
+    } finally {
+      setIsRefreshingPrice(false);
+    }
   }, [refetchPrice]);
 
   // Handle create alert
@@ -136,127 +145,139 @@ export default function Home() {
               ethPrice={ethPrice}
               timestamp={priceTimestamp}
               onRefresh={handleRefreshPrice}
-              loading={isPriceLoading}
+              loading={isPriceLoading || isRefreshingPrice}
             />
 
-            {/* Alert Form */}
-            <AlertForm
-              onCreateAlert={handleCreateAlert}
-              loading={isCreatingAlert}
-            />
-
-            {/* Alerts Section */}
-            {isLoadingUserAlerts ? (
-              <div className="loading-alerts">
-                <div className="loading-spinner"></div>
-                <p>Loading your alerts...</p>
+            {/* Main Content - Side by Side Layout */}
+            <div className="mainContentGrid">
+              {/* Left Column - Alert Form */}
+              <div className="formColumn">
+                <AlertForm
+                  onCreateAlert={handleCreateAlert}
+                  loading={isCreatingAlert}
+                />
               </div>
-            ) : (
-              <div className="alertSection">
-                <h3 className="alertSectionHeader">
-                  <span className="alertSectionIndicatorActive"></span>
-                  Your Alerts ({userAlerts.length})
-                </h3>
 
-                {userAlerts.length === 0 ? (
-                  <div className="no-alerts">
-                    <div className="no-alerts-card">
-                      <h4>No alerts yet</h4>
-                      <p>Create your first price alert above to get started!</p>
-                    </div>
+              {/* Right Column - Alerts Section */}
+              <div className="alertsColumn">
+                {isLoadingUserAlerts ? (
+                  <div className="loading-alerts">
+                    <div className="loading-spinner"></div>
+                    <p>Loading your alerts...</p>
                   </div>
                 ) : (
-                  <>
-                    {/* Active Alerts */}
-                    {activeAlerts.length > 0 && (
-                      <div className="alertSubsection">
-                        <h4 className="alertSubsectionHeader">
-                          <span className="alertStatusDot alertStatusActive"></span>
-                          Active Alerts ({activeAlerts.length})
-                        </h4>
-                        <div className="alertList">
-                          {activeAlerts.map((alert) => (
-                            <AlertCard
-                              key={alert.id.toString()}
-                              alert={{
-                                id: alert.id.toString(),
-                                targetPrice: Number(alert.targetPrice) / 1e18,
-                                isAbove: alert.isAbove,
-                                triggered: alert.triggered,
-                                deleted: alert.deleted,
-                                createdAt: Number(alert.createdAt),
-                              }}
-                              currentPrice={parseFloat(ethPrice)}
-                              onDelete={handleDeleteAlert}
-                              onCheck={handleCheckAlert}
-                              loading={isDeletingAlert || isCheckingAlert}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                  <div className="alertSection">
+                    <h3 className="alertSectionHeader">
+                      <span className="alertSectionIndicatorActive"></span>
+                      Your Alerts ({userAlerts.length})
+                    </h3>
 
-                    {/* Triggered Alerts */}
-                    {triggeredAlerts.length > 0 && (
-                      <div className="alertSubsection">
-                        <h4 className="alertSubsectionHeader">
-                          <span className="alertStatusDot alertStatusTriggered"></span>
-                          Triggered Alerts ({triggeredAlerts.length})
-                        </h4>
-                        <div className="alertList">
-                          {triggeredAlerts.map((alert) => (
-                            <AlertCard
-                              key={alert.id.toString()}
-                              alert={{
-                                id: alert.id.toString(),
-                                targetPrice: Number(alert.targetPrice) / 1e18,
-                                isAbove: alert.isAbove,
-                                triggered: alert.triggered,
-                                deleted: alert.deleted,
-                                createdAt: Number(alert.createdAt),
-                              }}
-                              currentPrice={parseFloat(ethPrice)}
-                              onDelete={handleDeleteAlert}
-                              onCheck={handleCheckAlert}
-                              loading={isDeletingAlert || isCheckingAlert}
-                            />
-                          ))}
+                    {userAlerts.length === 0 ? (
+                      <div className="no-alerts">
+                        <div className="no-alerts-card">
+                          <h4>No alerts yet</h4>
+                          <p>
+                            Create your first price alert above to get started!
+                          </p>
                         </div>
                       </div>
-                    )}
+                    ) : (
+                      <>
+                        {/* Active Alerts */}
+                        {activeAlerts.length > 0 && (
+                          <div className="alertSubsection">
+                            <h4 className="alertSubsectionHeader">
+                              <span className="alertStatusDot alertStatusActive"></span>
+                              Active Alerts ({activeAlerts.length})
+                            </h4>
+                            <div className="alertList">
+                              {activeAlerts.map((alert) => (
+                                <AlertCard
+                                  key={alert.id.toString()}
+                                  alert={{
+                                    id: alert.id.toString(),
+                                    targetPrice:
+                                      Number(alert.targetPrice) / 1e18,
+                                    isAbove: alert.isAbove,
+                                    triggered: alert.triggered,
+                                    deleted: alert.deleted,
+                                    createdAt: Number(alert.createdAt),
+                                  }}
+                                  currentPrice={parseFloat(ethPrice)}
+                                  onDelete={handleDeleteAlert}
+                                  onCheck={handleCheckAlert}
+                                  loading={isDeletingAlert || isCheckingAlert}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        )}
 
-                    {/* Deleted Alerts */}
-                    {deletedAlerts.length > 0 && (
-                      <div className="alertSubsection">
-                        <h4 className="alertSubsectionHeader">
-                          <span className="alertStatusDot alertStatusDeleted"></span>
-                          Deleted Alerts ({deletedAlerts.length})
-                        </h4>
-                        <div className="alertList">
-                          {deletedAlerts.map((alert) => (
-                            <AlertCard
-                              key={alert.id.toString()}
-                              alert={{
-                                id: alert.id.toString(),
-                                targetPrice: Number(alert.targetPrice) / 1e18,
-                                isAbove: alert.isAbove,
-                                triggered: alert.triggered,
-                                deleted: alert.deleted,
-                                createdAt: Number(alert.createdAt),
-                              }}
-                              currentPrice={parseFloat(ethPrice)}
-                              onDelete={handleDeleteAlert}
-                              onCheck={handleCheckAlert}
-                              loading={isDeletingAlert || isCheckingAlert}
-                            />
-                          ))}
-                        </div>
-                      </div>
+                        {/* Triggered Alerts */}
+                        {triggeredAlerts.length > 0 && (
+                          <div className="alertSubsection">
+                            <h4 className="alertSubsectionHeader">
+                              <span className="alertStatusDot alertStatusTriggered"></span>
+                              Triggered Alerts ({triggeredAlerts.length})
+                            </h4>
+                            <div className="alertList">
+                              {triggeredAlerts.map((alert) => (
+                                <AlertCard
+                                  key={alert.id.toString()}
+                                  alert={{
+                                    id: alert.id.toString(),
+                                    targetPrice:
+                                      Number(alert.targetPrice) / 1e18,
+                                    isAbove: alert.isAbove,
+                                    triggered: alert.triggered,
+                                    deleted: alert.deleted,
+                                    createdAt: Number(alert.createdAt),
+                                  }}
+                                  currentPrice={parseFloat(ethPrice)}
+                                  onDelete={handleDeleteAlert}
+                                  onCheck={handleCheckAlert}
+                                  loading={isDeletingAlert || isCheckingAlert}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Deleted Alerts */}
+                        {deletedAlerts.length > 0 && (
+                          <div className="alertSubsection">
+                            <h4 className="alertSubsectionHeader">
+                              <span className="alertStatusDot alertStatusDeleted"></span>
+                              Deleted Alerts ({deletedAlerts.length})
+                            </h4>
+                            <div className="alertList">
+                              {deletedAlerts.map((alert) => (
+                                <AlertCard
+                                  key={alert.id.toString()}
+                                  alert={{
+                                    id: alert.id.toString(),
+                                    targetPrice:
+                                      Number(alert.targetPrice) / 1e18,
+                                    isAbove: alert.isAbove,
+                                    triggered: alert.triggered,
+                                    deleted: alert.deleted,
+                                    createdAt: Number(alert.createdAt),
+                                  }}
+                                  currentPrice={parseFloat(ethPrice)}
+                                  onDelete={handleDeleteAlert}
+                                  onCheck={handleCheckAlert}
+                                  loading={isDeletingAlert || isCheckingAlert}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </>
                     )}
-                  </>
+                  </div>
                 )}
               </div>
-            )}
+            </div>
 
             {/* Transaction Status */}
             {transactionHash && (
