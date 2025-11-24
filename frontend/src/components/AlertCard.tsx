@@ -6,6 +6,7 @@ interface Alert {
   targetPrice: number;
   isAbove: boolean;
   triggered: boolean;
+  deleted: boolean;
   createdAt: number;
 }
 
@@ -53,6 +54,7 @@ export default function AlertCard({
   };
 
   const getCardStyle = () => {
+    if (alert.deleted) return `alertCard alertCardDeleted`;
     if (alert.triggered) return `alertCard alertCardTriggered`;
     if (isPriceCloseToTarget()) return `alertCard alertCardClose`;
     return `alertCard alertCardActive`;
@@ -63,7 +65,28 @@ export default function AlertCard({
         <div className="flexCol">
           <div className="alertCardHeader">
             <span className="alertCardTitle">Alert {alert.id}</span>
-            {alert.triggered && (
+            {alert.deleted && (
+              <span className="alertCardBadgeDeleted">
+                <svg
+                  className="iconSmall"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"
+                    clipRule="evenodd"
+                  />
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                DELETED
+              </span>
+            )}
+            {alert.triggered && !alert.deleted && (
               <span className="alertCardBadgeTriggered">
                 <svg
                   className="iconSmall"
@@ -79,7 +102,7 @@ export default function AlertCard({
                 TRIGGERED
               </span>
             )}
-            {!alert.triggered && isPriceCloseToTarget() && (
+            {!alert.triggered && !alert.deleted && isPriceCloseToTarget() && (
               <span className="alertCardBadgeClose">⚡ CLOSE</span>
             )}
           </div>
@@ -95,7 +118,7 @@ export default function AlertCard({
               </span>
             </p>
 
-            {currentPrice && !alert.triggered && (
+            {currentPrice && !alert.triggered && !alert.deleted && (
               <p className="alertCardCurrentPrice">
                 Current: $
                 {currentPrice.toLocaleString("en-UK", {
@@ -121,7 +144,7 @@ export default function AlertCard({
             </p>
           </div>
         </div>
-        {!alert.triggered && (
+        {!alert.triggered && !alert.deleted && (
           <div className="alertCardButtons">
             <button
               onClick={() => onCheck(alert.id)}
