@@ -2,6 +2,7 @@
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
+import "../app/globals.css";
 
 export function WalletConnect() {
   const { address, isConnected } = useAccount();
@@ -44,7 +45,7 @@ export function WalletConnect() {
                     <button
                       onClick={openConnectModal}
                       type="button"
-                      className="btn-primary"
+                      className="buttonGradient"
                     >
                       Connect Wallet
                     </button>
@@ -101,15 +102,6 @@ export function WalletConnect() {
           );
         }}
       </ConnectButton.Custom>
-
-      {/* Status Display for Development */}
-      {process.env.NODE_ENV === "development" && (
-        <div className="mt-4 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-sm">
-          <div className="font-medium mb-2">Wallet Status:</div>
-          <div>Connected: {isConnected ? "Yes" : "No"}</div>
-          {address && <div>Address: {address}</div>}
-        </div>
-      )}
     </div>
   );
 }

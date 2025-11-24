@@ -103,7 +103,7 @@ export default function Home() {
   );
 
   return (
-    <main className="container">
+    <main>
       <div className="innerContainer">
         {/* Wallet Connection */}
         <div className="mb-8">
@@ -122,6 +122,9 @@ export default function Home() {
                 Tellor Oracle data.
               </p>
               <div className="connect-wallet-features">
+                {/* <div className="feature-item"></div> */}
+                <WalletConnect />
+
                 <div className="feature-item">
                   <span className="feature-icon">📊</span>
                   <span>Real-time ETH price data</span>

@@ -27,7 +27,7 @@ body {
 
 /* Price Card Styles */
 .priceCard {
-  background: linear-gradient(to bottom right, #6366f1, #9333ea);
+  background: #0a1045;
   border-radius: 1rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   padding: 2rem;
@@ -604,21 +604,25 @@ body {
 /* Layout Styles */
 .container {
   min-height: 100vh;
-  background: linear-gradient(to bottom right, #dbeafe, #e0e7ff, #f3e8ff);
+  background: #ce7a7e;
   padding: 1rem;
 }
 
 .innerContainer {
   max-width: 72rem;
+  width: 100%;
   margin: 0 auto;
+  padding: 0 1rem;
 }
 
 /* Main Content Grid - Side by Side Layout */
 .mainContentGrid {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: minmax(300px, 1fr) minmax(0, 2fr);
   gap: 2rem;
   margin-bottom: 2rem;
+  width: 100%;
+  max-width: 100%;
 }
 
 @media (max-width: 1024px) {
