@@ -60,7 +60,7 @@ export default function AlertForm({
         </div>
 
         <button
-          className="formSubmitBtn"
+          className="buttonGradient"
           onClick={handleSubmit}
           disabled={loading || !targetPrice || parseFloat(targetPrice) <= 0}
         >
