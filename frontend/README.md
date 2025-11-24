@@ -2,6 +2,21 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+### Environment Setup
+
+1. Copy the environment template:
+
+```bash
+cp .env.example .env.local
+```
+
+2. Update `.env.local` with your actual values:
+   - `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`: Get from [WalletConnect Cloud](https://cloud.walletconnect.com/)
+   - `NEXT_PUBLIC_PRICE_ALERT_CONTRACT_ADDRESS`: Your deployed PriceAlert contract address
+   - `NEXT_PUBLIC_TELLOR_ORACLE_ADDRESS`: Tellor Oracle contract address for your network
+
+### Running the Development Server
+
 First, run the development server:
 
 ```bash
