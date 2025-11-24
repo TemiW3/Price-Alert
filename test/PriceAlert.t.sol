@@ -284,7 +284,8 @@ contract PriceAlertTest is Test {
         vm.stopPrank();
 
         PriceAlert.Alert memory alert = priceAlert.getAlert(alertId);
-        assertTrue(alert.triggered); // Deletion sets triggered to true
+        assertTrue(alert.deleted); // Deletion sets deleted to true
+        assertFalse(alert.triggered); // Should not be triggered, just deleted
     }
 
     function test_DeleteAlert_RevertsWithNonExistentAlert() public {
@@ -479,5 +480,59 @@ contract PriceAlertTest is Test {
 
         bool triggered2 = priceAlert.checkAlert(alertId2);
         assertTrue(triggered2); // Should trigger because current <= target
+    }
+
+    function test_AlertCategorization() public {
+        // Alice creates multiple alerts
+        vm.startPrank(alice);
+        uint256 alert1 = priceAlert.createAlert(60000e18, true);  // Above alert
+        uint256 alert2 = priceAlert.createAlert(40000e18, false); // Below alert
+        uint256 alert3 = priceAlert.createAlert(55000e18, true);  // Another above alert
+        vm.stopPrank();
+
+        // Initially, all should be active
+        uint256[] memory activeAlerts = priceAlert.getActiveAlerts(alice);
+        assertEq(activeAlerts.length, 3);
+
+        uint256[] memory triggeredAlerts = priceAlert.getTriggeredAlerts(alice);
+        assertEq(triggeredAlerts.length, 0);
+
+        uint256[] memory deletedAlerts = priceAlert.getDeletedAlerts(alice);
+        assertEq(deletedAlerts.length, 0);
+
+        // Delete one alert
+        vm.startPrank(alice);
+        priceAlert.deleteAlert(alert2);
+        vm.stopPrank();
+
+        // Check categorization after deletion
+        activeAlerts = priceAlert.getActiveAlerts(alice);
+        assertEq(activeAlerts.length, 2);
+        assertTrue(activeAlerts[0] == alert1 || activeAlerts[0] == alert3);
+        assertTrue(activeAlerts[1] == alert1 || activeAlerts[1] == alert3);
+
+        deletedAlerts = priceAlert.getDeletedAlerts(alice);
+        assertEq(deletedAlerts.length, 1);
+        assertEq(deletedAlerts[0], alert2);
+
+        // Trigger one alert by updating price
+        vm.warp(block.timestamp + 1);
+        mockTellor.submitData(QUERY_ID, 65000e18, block.timestamp); // Price goes above 60000
+
+        bool triggered = priceAlert.checkAlert(alert1);
+        assertTrue(triggered);
+
+        // Check final categorization
+        activeAlerts = priceAlert.getActiveAlerts(alice);
+        assertEq(activeAlerts.length, 1);
+        assertEq(activeAlerts[0], alert3);
+
+        triggeredAlerts = priceAlert.getTriggeredAlerts(alice);
+        assertEq(triggeredAlerts.length, 1);
+        assertEq(triggeredAlerts[0], alert1);
+
+        deletedAlerts = priceAlert.getDeletedAlerts(alice);
+        assertEq(deletedAlerts.length, 1);
+        assertEq(deletedAlerts[0], alert2);
     }
 }

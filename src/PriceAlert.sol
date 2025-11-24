@@ -11,6 +11,7 @@ contract PriceAlert {
         uint256 targetPrice;
         bool isAbove;
         bool triggered;
+        bool deleted;
         uint256 createdAt;
     }
 
@@ -54,6 +55,7 @@ contract PriceAlert {
             targetPrice: _targetPrice,
             isAbove: _isAbove,
             triggered: false,
+            deleted: false,
             createdAt: block.timestamp
         });
 
@@ -90,6 +92,7 @@ contract PriceAlert {
         Alert storage alert = alerts[_alertId];
 
         require(!alert.triggered, "Alert already triggered");
+        require(!alert.deleted, "Alert was deleted");
 
         // Get current price from Tellor
         (uint256 currentPrice, uint256 timestamp) = getCurrentPrice();
@@ -135,8 +138,9 @@ contract PriceAlert {
         require(_alertId < alerts.length, "Alert does not exist");
         require(alerts[_alertId].user == msg.sender, "Not your alert");
         require(!alerts[_alertId].triggered, "Alert already triggered");
+        require(!alerts[_alertId].deleted, "Alert already deleted");
 
-        alerts[_alertId].triggered = true;
+        alerts[_alertId].deleted = true;
 
         emit AlertDeleted(_alertId, msg.sender);
     }
@@ -158,6 +162,93 @@ contract PriceAlert {
         return alerts.length;
     }
 
+    function getActiveAlerts(
+        address _user
+    ) external view returns (uint256[] memory) {
+        uint256[] memory userAlertIds = userAlerts[_user];
+        uint256 activeCount = 0;
+
+        // Count active alerts
+        for (uint256 i = 0; i < userAlertIds.length; i++) {
+            uint256 alertId = userAlertIds[i];
+            if (!alerts[alertId].triggered && !alerts[alertId].deleted) {
+                activeCount++;
+            }
+        }
+
+        // Create array of active alert IDs
+        uint256[] memory activeAlerts = new uint256[](activeCount);
+        uint256 index = 0;
+
+        for (uint256 i = 0; i < userAlertIds.length; i++) {
+            uint256 alertId = userAlertIds[i];
+            if (!alerts[alertId].triggered && !alerts[alertId].deleted) {
+                activeAlerts[index] = alertId;
+                index++;
+            }
+        }
+
+        return activeAlerts;
+    }
+
+    function getTriggeredAlerts(
+        address _user
+    ) external view returns (uint256[] memory) {
+        uint256[] memory userAlertIds = userAlerts[_user];
+        uint256 triggeredCount = 0;
+
+        // Count triggered alerts (but not deleted)
+        for (uint256 i = 0; i < userAlertIds.length; i++) {
+            uint256 alertId = userAlertIds[i];
+            if (alerts[alertId].triggered && !alerts[alertId].deleted) {
+                triggeredCount++;
+            }
+        }
+
+        // Create array of triggered alert IDs
+        uint256[] memory triggeredAlerts = new uint256[](triggeredCount);
+        uint256 index = 0;
+
+        for (uint256 i = 0; i < userAlertIds.length; i++) {
+            uint256 alertId = userAlertIds[i];
+            if (alerts[alertId].triggered && !alerts[alertId].deleted) {
+                triggeredAlerts[index] = alertId;
+                index++;
+            }
+        }
+
+        return triggeredAlerts;
+    }
+
+    function getDeletedAlerts(
+        address _user
+    ) external view returns (uint256[] memory) {
+        uint256[] memory userAlertIds = userAlerts[_user];
+        uint256 deletedCount = 0;
+
+        // Count deleted alerts
+        for (uint256 i = 0; i < userAlertIds.length; i++) {
+            uint256 alertId = userAlertIds[i];
+            if (alerts[alertId].deleted) {
+                deletedCount++;
+            }
+        }
+
+        // Create array of deleted alert IDs
+        uint256[] memory deletedAlerts = new uint256[](deletedCount);
+        uint256 index = 0;
+
+        for (uint256 i = 0; i < userAlertIds.length; i++) {
+            uint256 alertId = userAlertIds[i];
+            if (alerts[alertId].deleted) {
+                deletedAlerts[index] = alertId;
+                index++;
+            }
+        }
+
+        return deletedAlerts;
+    }
+
     function getDataFeedInfo()
         external
         view
@@ -172,32 +263,5 @@ contract PriceAlert {
         if (totalDataPoints > 0) {
             (latestPrice, latestTimestamp) = getCurrentPrice();
         }
-    }
-
-    function getActiveAlerts(
-        address _user
-    ) external view returns (uint256[] memory) {
-        uint256[] memory allAlerts = userAlerts[_user];
-        uint256 activeCount = 0;
-
-        // Count active alerts
-        for (uint256 i = 0; i < allAlerts.length; i++) {
-            if (!alerts[allAlerts[i]].triggered) {
-                activeCount++;
-            }
-        }
-
-        // Create array of active alert IDs
-        uint256[] memory activeAlerts = new uint256[](activeCount);
-        uint256 currentIndex = 0;
-
-        for (uint256 i = 0; i < allAlerts.length; i++) {
-            if (!alerts[allAlerts[i]].triggered) {
-                activeAlerts[currentIndex] = allAlerts[i];
-                currentIndex++;
-            }
-        }
-
-        return activeAlerts;
     }
 }
