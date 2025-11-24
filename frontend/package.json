@@ -11,7 +11,8 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@rainbow-me/rainbowkit": "^2.2.9",
+    "@reown/appkit": "^1.8.14",
+    "@reown/appkit-adapter-wagmi": "^1.8.14",
     "@tanstack/react-query": "^5.90.10",
     "next": "16.0.3",
     "react": "19.2.0",

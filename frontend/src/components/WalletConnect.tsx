@@ -1,116 +1,113 @@
 "use client";
 
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount } from "wagmi";
+import { useAppKit } from "@reown/appkit/react";
+import { useAccount, useChainId, useDisconnect } from "wagmi";
+import { sepolia } from "wagmi/chains";
 import "../app/globals.css";
 
 export function WalletConnect() {
+  const { open } = useAppKit();
   const { address, isConnected } = useAccount();
+  const chainId = useChainId();
+  const { disconnect } = useDisconnect();
+
+  const isWrongNetwork = chainId !== sepolia.id;
+
+  const formatAddress = (addr: string) => {
+    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  };
+
+  if (!isConnected) {
+    return (
+      <div className="wallet-connect">
+        <button onClick={() => open()} type="button" className="buttonGradient">
+          Connect Wallet
+        </button>
+      </div>
+    );
+  }
+
+  if (isWrongNetwork) {
+    return (
+      <div className="wallet-connect">
+        <button
+          onClick={() => open({ view: "Networks" })}
+          type="button"
+          className="buttonDanger"
+        >
+          Wrong Network - Switch to Sepolia
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="wallet-connect">
-      <ConnectButton.Custom>
-        {({
-          account,
-          chain,
-          openAccountModal,
-          openChainModal,
-          openConnectModal,
-          authenticationStatus,
-          mounted,
-        }) => {
-          // Note: If your app doesn't use authentication, you
-          // can remove all 'authenticationStatus' checks
-          const ready = mounted && authenticationStatus !== "loading";
-          const connected =
-            ready &&
-            account &&
-            chain &&
-            (!authenticationStatus || authenticationStatus === "authenticated");
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => open({ view: "Networks" })}
+          className="chain-button"
+          type="button"
+        >
+          <div className="w-4 h-4">
+            <img
+              alt="Sepolia"
+              src="https://icons.llamao.fi/icons/chains/rsz_ethereum.jpg"
+              className="w-4 h-4 rounded-full"
+            />
+          </div>
+          Sepolia
+        </button>
 
-          return (
-            <div
-              {...(!ready && {
-                "aria-hidden": true,
-                style: {
-                  opacity: 0,
-                  pointerEvents: "none",
-                  userSelect: "none",
-                },
-              })}
-            >
-              {(() => {
-                if (!connected) {
-                  return (
-                    <button
-                      onClick={openConnectModal}
-                      type="button"
-                      className="buttonGradient"
-                    >
-                      Connect Wallet
-                    </button>
-                  );
-                }
-
-                if (chain.unsupported) {
-                  return (
-                    <button
-                      onClick={openChainModal}
-                      type="button"
-                      className="btn-danger"
-                    >
-                      Wrong network
-                    </button>
-                  );
-                }
-
-                return (
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={openChainModal}
-                      className="chain-button"
-                      type="button"
-                    >
-                      {chain.hasIcon && (
-                        <div className="w-4 h-4">
-                          {chain.iconUrl && (
-                            <img
-                              alt={chain.name ?? "Chain icon"}
-                              src={chain.iconUrl}
-                              className="w-4 h-4 rounded-full"
-                            />
-                          )}
-                        </div>
-                      )}
-                      {chain.name}
-                    </button>
-
-                    <button
-                      onClick={openAccountModal}
-                      type="button"
-                      className="account-button"
-                    >
-                      {account.displayName}
-                      {account.displayBalance
-                        ? ` (${account.displayBalance})`
-                        : ""}
-                    </button>
-                  </div>
-                );
-              })()}
-            </div>
-          );
-        }}
-      </ConnectButton.Custom>
+        <button
+          onClick={() => open({ view: "Account" })}
+          type="button"
+          className="account-button"
+        >
+          {formatAddress(address!)}
+        </button>
+      </div>
     </div>
   );
 }
 
 // Simple version for quick testing
 export function SimpleWalletConnect() {
+  const { open } = useAppKit();
+  const { isConnected } = useAccount();
+
   return (
     <div className="wallet-connect">
-      <ConnectButton />
+      <w3m-button />
+    </div>
+  );
+}
+
+// Custom Reown Button Component
+export function ReownConnectButton() {
+  const { open } = useAppKit();
+  const { address, isConnected } = useAccount();
+  const chainId = useChainId();
+
+  return (
+    <div className="wallet-connect">
+      {!isConnected ? (
+        <button onClick={() => open()} className="buttonGradient">
+          Connect with Reown
+        </button>
+      ) : (
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-600">
+            Connected: {address?.slice(0, 6)}...{address?.slice(-4)}
+          </span>
+          <button
+            onClick={() => open({ view: "Account" })}
+            className="buttonInfo"
+          >
+            Account
+          </button>
+        </div>
+      )}
     </div>
   );
 }
