@@ -279,6 +279,77 @@ body {
   gap: 0.5rem;
 }
 
+/* Alert Form Styles */
+.formCard {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.formHeader {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .formGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.formLabel {
+  display: block;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.formInput {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-width: 2px;
+  border-color: #e5e7eb;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.formInput:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #6366f1;
+  border-color: transparent;
+}
+
+.formTip {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 0.5rem;
+}
+
+.formTipText {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #1e40af;
+}
+
 /* Footer Styles */
 .footer {
   margin-top: 3rem;
@@ -662,4 +733,181 @@ body {
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* Wallet Connect Styles */
+.wallet-connect {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.chain-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.chain-button:hover {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.account-button {
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.account-button:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode wallet styles */
+@media (prefers-color-scheme: dark) {
+  .chain-button {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+  }
+
+  .chain-button:hover {
+    background-color: #4b5563;
+    border-color: #6b7280;
+  }
+}
+
+/* Connect Wallet Prompt Styles */
+.connect-wallet-prompt {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+
+.connect-wallet-card {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  padding: 3rem;
+  text-align: center;
+  max-width: 32rem;
+  margin: 0 auto;
+}
+
+.connect-wallet-title {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.connect-wallet-text {
+  color: #6b7280;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  margin-bottom: 2rem;
+}
+
+.connect-wallet-features {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 0.75rem;
+}
+
+.feature-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+/* Loading States */
+.loading-alerts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #e5e7eb;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.no-alerts {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.no-alerts-card {
+  background-color: #f9fafb;
+  border: 2px dashed #d1d5db;
+  border-radius: 1rem;
+  padding: 2rem;
+  text-align: center;
+  max-width: 24rem;
+}
+
+.no-alerts-card h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.no-alerts-card p {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* Transaction Status */
+.transaction-status {
+  margin-top: 2rem;
+}
+
+.transaction-link {
+  color: #3b82f6;
+  text-decoration: underline;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  display: inline-block;
+}
+
+.transaction-link:hover {
+  color: #2563eb;
 }
