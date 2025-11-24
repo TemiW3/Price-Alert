@@ -3,9 +3,6 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactCompiler: true,
 
-  // Empty turbopack config to silence warning
-  turbopack: {},
-
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -36,6 +33,25 @@ const nextConfig: NextConfig = {
           "commonjs2 @react-native-async-storage/async-storage",
       });
     }
+
+    // Ignore problematic files and directories
+    config.plugins = config.plugins || [];
+    const { IgnorePlugin } = require('webpack');
+    
+    config.plugins.push(
+      new IgnorePlugin({
+        resourceRegExp: /^(tap|tape|fastbench|desm|why-is-node-running|pino-elasticsearch)$/,
+      }),
+      new IgnorePlugin({
+        resourceRegExp: /node_modules\/thread-stream\/(test|bench)/,
+      }),
+      new IgnorePlugin({
+        resourceRegExp: /\.(test|spec)\.(js|mjs|ts|tsx)$/,
+      }),
+      new IgnorePlugin({
+        resourceRegExp: /(LICENSE|README|CHANGELOG)\.(md|txt)?$/,
+      })
+    );
 
     return config;
   },
